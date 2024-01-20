@@ -1041,15 +1041,17 @@ bool Monitor::connect() {
         soap->send_timeout = 0;
         //soap->bind_flags |= SO_REUSEADDR;
         soap_register_plugin(soap, soap_wsse);
-        soap_register_plugin(soap, soap_wsa);
+//        soap_register_plugin(soap, soap_wsa);
         proxyEvent = PullPointSubscriptionBindingProxy(soap);
 
         if (!onvif_url.empty()) {
           std::string full_url = onvif_url + "/Events";
           proxyEvent.soap_endpoint = full_url.c_str();
           set_credentials(soap);
-          const char *RequestMessageID = soap_wsa_rand_uuid(soap);
-          if (soap_wsa_request(soap, RequestMessageID,  proxyEvent.soap_endpoint , "CreatePullPointSubscriptionRequest") == SOAP_OK) {
+          const char *RequestMessageID = "RequestMessageID";
+//          const char *RequestMessageID = soap_wsa_rand_uuid(soap);
+//          if (soap_wsa_request(soap, RequestMessageID,  proxyEvent.soap_endpoint , "CreatePullPointSubscriptionRequest") == SOAP_OK) {
+          if (1==1){
             Debug(1, "ONVIF Endpoint: %s", proxyEvent.soap_endpoint);
             if (proxyEvent.CreatePullPointSubscription(&request, response) != SOAP_OK) {
               const char *detail = soap_fault_detail(soap);
@@ -1064,8 +1066,10 @@ bool Monitor::connect() {
             } else {
               //Empty the stored messages
               set_credentials(soap);
-              RequestMessageID = soap_wsa_rand_uuid(soap);
-              if (soap_wsa_request(soap, RequestMessageID,  response.SubscriptionReference.Address , "PullMessageRequest") == SOAP_OK) {
+              RequestMessageID = "RequestMessageID";
+//              RequestMessageID = soap_wsa_rand_uuid(soap);
+//              if (soap_wsa_request(soap, RequestMessageID,  response.SubscriptionReference.Address , "PullMessageRequest") == SOAP_OK) {
+              if (1==1){
                 Debug(1, "ONVIF :soap_wsa_request  OK ");
                 if ((proxyEvent.PullMessages(response.SubscriptionReference.Address, NULL, &tev__PullMessages, tev__PullMessagesResponse) != SOAP_OK) &&
                     (soap->error != SOAP_EOF)
@@ -1080,7 +1084,7 @@ bool Monitor::connect() {
                 Error("ONVIF Couldn't set wsa headers   RequestMessageID= %s ; TO= %s ; Request=  PullMessageRequest .... ! Error %i %s, %s",RequestMessageID , response.SubscriptionReference.Address , soap->error, soap_fault_string(soap), soap_fault_detail(soap));
                 Event_Poller_Healthy = false;
               }
-
+/*
               // we renew the current subscription .........
               set_credentials(soap);
               RequestMessageID = soap_wsa_rand_uuid(soap);
@@ -1106,6 +1110,7 @@ bool Monitor::connect() {
                     soap_fault_detail(soap));
                 Event_Poller_Healthy = false;
               }
+*/
             }
           } else {
             Error("ONVIF Couldn't set wsa headers RequestMessageID=%s; TO=%s; Request=CreatePullPointSubscriptionRequest Error %i %s, %s",
@@ -1813,8 +1818,10 @@ bool Monitor::Poll() {
     } else {
 #ifdef WITH_GSOAP
       set_credentials(soap);
-      const char *RequestMessageID = soap_wsa_rand_uuid(soap);
-      if (soap_wsa_request(soap, RequestMessageID, response.SubscriptionReference.Address, "PullMessageRequest") == SOAP_OK) {
+//      const char *RequestMessageID = soap_wsa_rand_uuid(soap);
+//      if (soap_wsa_request(soap, RequestMessageID, response.SubscriptionReference.Address, "PullMessageRequest") == SOAP_OK) {
+      const char *RequestMessageID = "RequestMessageID";
+      if (1==1){
         Debug(1, ":soap_wsa_request OK; starting ONVIF PullMessageRequest ...");
         int result = proxyEvent.PullMessages(response.SubscriptionReference.Address, NULL, &tev__PullMessages, tev__PullMessagesResponse);
         if (result != SOAP_OK) {
@@ -1859,7 +1866,7 @@ bool Monitor::Poll() {
               Debug(1, "Got a message that we couldn't parse");
             }
           }  // end foreach msg
-
+/*
           // we renew the current subscription .........
           set_credentials(soap);
           std::string Termination_time = "PT60S";
@@ -1883,6 +1890,7 @@ bool Monitor::Poll() {
                 RequestMessageID, response.SubscriptionReference.Address, soap->error, soap_fault_string(soap), soap_fault_detail(soap));
             Event_Poller_Healthy = false;
           }
+*/
         }  // end if SOAP OK/NOT OK
       } else {
         Error("Couldn't set wsa headers   RequestMessageID= %s ; TO= %s ; Request=  PullMessageRequest .... ! Error %i %s, %s",
@@ -3443,8 +3451,10 @@ int Monitor::Close() {
     Debug(1, "Tearing Down Onvif");
     _wsnt__Unsubscribe wsnt__Unsubscribe;
     _wsnt__UnsubscribeResponse wsnt__UnsubscribeResponse;
-    const char *RequestMessageID = soap_wsa_rand_uuid(soap);
-    if (soap_wsa_request(soap, RequestMessageID, response.SubscriptionReference.Address, "UnsubscribeRequest") == SOAP_OK)
+//    const char *RequestMessageID = soap_wsa_rand_uuid(soap);
+//    if (soap_wsa_request(soap, RequestMessageID, response.SubscriptionReference.Address, "UnsubscribeRequest") == SOAP_OK)
+    const char *RequestMessageID = "RequestMessageID";
+    if (1==1)
     {
       proxyEvent.Unsubscribe(response.SubscriptionReference.Address, NULL, &wsnt__Unsubscribe, wsnt__UnsubscribeResponse);
     } else {
